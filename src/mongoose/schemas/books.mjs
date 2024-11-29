@@ -3,7 +3,7 @@ import mongoose, { mongo } from "mongoose";
 const booksSchema = new mongoose.Schema({
     title: {
         type: mongoose.Schema.Types.String,
-        required: true
+        required: true,
     },
     author: {
         type: mongoose.Schema.Types.String,
@@ -22,5 +22,7 @@ const booksSchema = new mongoose.Schema({
         required: false
     }
 })
+
+booksSchema.index({ title: 1, author: 1 }, { unique: true });
 
 export const Books = mongoose.model('Books', booksSchema);

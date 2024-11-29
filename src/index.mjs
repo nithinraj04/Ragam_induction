@@ -1,5 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
+import router from "./routes/books.mjs";
+
+import { Books } from "./mongoose/schemas/books.mjs";
 
 const app = express();
 
@@ -17,6 +20,8 @@ app.get('/',
 		});
 	}
 )
+
+app.use(router);
 
 
 app.listen(8080, () => {
