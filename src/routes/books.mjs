@@ -8,7 +8,7 @@ const router = Router();
 router.get(
     '/api/books',
     async (req, res) => {
-        const books = await Books.find({},{ _id: 0, __v: 0 });
+        const books = await Books.find({},{ __v: 0 });
         res.status(200).send(books);
     }
 )
@@ -17,6 +17,7 @@ router.post(
     '/api/books',
     checkSchema(bookValidationSchema),
     async (req, res) => {
+        console.log("Validation done!");
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
@@ -33,6 +34,22 @@ router.post(
             return res.status(400).send(err);
         }
         return res.status(201).send(book);
+    }
+)
+
+router.put(
+    '/api/books/:id',
+    checkSchema(bookValidationSchema),
+    async (req, res) => {
+        const errors = validationResult(req);
+        const { params: { id } } = req;
+        if(!errors.isEmpty())
+            return res.status(400).send({ errors: errors.array() });
+
+        const data = matchedData(req);
+        const newBook = Books(data);
+        const updated = await Books.findByIdAndUpdate(id, data);
+        return res.status(200).send(updated);
     }
 )
 

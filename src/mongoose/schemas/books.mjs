@@ -19,9 +19,10 @@ const booksSchema = new mongoose.Schema({
     },
     availableCopies: {
         type: mongoose.Schema.Types.Number,
-        required: false
+        required: false,
+        default: 0
     }
-})
+});
 
 booksSchema.index({ title: 1, author: 1 }, { unique: true });
 
