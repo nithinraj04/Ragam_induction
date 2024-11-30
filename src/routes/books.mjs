@@ -1,15 +1,37 @@
 import { Router } from 'express';
-import { query, body, validationResult, matchedData, checkSchema, check } from 'express-validator';
+import { validationResult, matchedData, checkSchema, check } from 'express-validator';
 import { Books } from '../mongoose/schemas/books.mjs';
-import { bookValidationSchema } from '../utils/validationSchemas.mjs';
+import { bookValidationSchema, bookIdValidationSchema, bookSearchValidationSchema } from '../utils/validationSchemas.mjs';
 
 const router = Router();
 
 router.get(
     '/api/books',
+    checkSchema(bookSearchValidationSchema, ['query']),
     async (req, res) => {
-        const books = await Books.find({},{ __v: 0 });
+        const errors = validationResult(req);
+        if(!errors.isEmpty)
+            return res.status(400).send({ errors: errors.array() });
+
+        const filters = matchedData(req);
+        const books = await Books.find({...filters},{ __v: 0 });
         res.status(200).send(books);
+    }
+)
+
+router.get(
+    '/api/books/:id',
+    checkSchema(bookIdValidationSchema, ['params']),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty())
+            return res.status(400).send({ errors: errors.array() });
+        console.log(matchedData(req));
+        const { params: { id }} = req;
+        const bookData = await Books.findById(id);
+        if(!bookData)
+            return res.status(404).send({msg: "Book not found"});
+        return res.status(200).send(bookData)
     }
 )
 
@@ -40,16 +62,37 @@ router.post(
 router.put(
     '/api/books/:id',
     checkSchema(bookValidationSchema),
+    checkSchema(bookIdValidationSchema, ['params']),
     async (req, res) => {
         const errors = validationResult(req);
-        const { params: { id } } = req;
         if(!errors.isEmpty())
             return res.status(400).send({ errors: errors.array() });
 
-        const data = matchedData(req);
+        const { id, ...data } = matchedData(req);
         const newBook = Books(data);
         const updated = await Books.findByIdAndUpdate(id, data);
+        if(!updated)
+            return res.status(418).send("Book not found. No changes made");
         return res.status(200).send(updated);
+    }
+)
+
+router.delete(
+    '/api/books/:id',
+    checkSchema(bookIdValidationSchema, ['params']),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty())
+            return res.status(400).send({errors : errors.array()});
+
+        const { id } = matchedData(req);
+        const deletedBook = await Books.findByIdAndDelete(id);
+        if(!deletedBook)
+            return res.status(400).send({ msg: "Book not found" });
+        return res.status(200).send({
+            msg: "Success", 
+            deletedBook: deletedBook
+        })
     }
 )
 
