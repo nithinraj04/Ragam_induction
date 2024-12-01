@@ -14,7 +14,7 @@ router.get(
             return res.status(400).send({ errors: errors.array() });
 
         const filters = matchedData(req);
-        const books = await Books.find({...filters},{ __v: 0 });
+        const books = await Books.find(filters, { __v: 0 });
         res.status(200).send(books);
     }
 )
