@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = {
+const userSchema = new mongoose.Schema({
     username: {
         type: mongoose.Schema.Types.String,
         required: true,
@@ -10,14 +10,19 @@ const userSchema = {
         type: mongoose.Schema.Types.String,
         required: true
     },
+    isAdmin: {
+        type: mongoose.Schema.Types.Boolean,
+        default: false
+    },
     displayName: {
         type: mongoose.Schema.Types.String,
         required: true
     },
     email: {
         type: mongoose.Schema.Types.String,
-        required: true
+        required: true,
+        unique: true
     }
-}
+});
 
 export const User = mongoose.model('User', userSchema);
