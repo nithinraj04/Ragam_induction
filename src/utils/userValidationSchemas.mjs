@@ -28,15 +28,20 @@ export const newUserRegValidationSchema = {
     }
 }
 
-export const resetPasswordValidationSchema = {
-    ...userLoginValidationSchema,
+export const adminActionValidationSchema = {
+    password: {
+        isString: true,
+        notEmpty: false
+    },
+    username: {
+        isString: true,
+        notEmpty: false
+    },
     email: {
         isEmail: {
             errorMessage: "Invalid email"
         },
-        notEmpty: {
-            errorMessage: "email is necessary"
-        }
+        notEmpty: false
     },
 }
 
