@@ -14,7 +14,7 @@ export const userLoginValidationSchema = {
 };
 
 export const newUserRegValidationSchema = {
-    userLoginValidationSchema,
+    ...userLoginValidationSchema,
     displayName: {
         isString: true,
         notEmpty: {
@@ -28,16 +28,36 @@ export const newUserRegValidationSchema = {
     }
 }
 
-export const forgotPasswordValidationSchema = {
-    userLoginValidationSchema,
+export const resetPasswordValidationSchema = {
+    ...userLoginValidationSchema,
     email: {
         isEmail: {
             errorMessage: "Invalid email"
+        },
+        notEmpty: {
+            errorMessage: "email is necessary"
         }
     },
 }
 
-export const logoutValidationSchema = {
+export const updateProfileValidationSchema = {
+    password: {
+        isString: true,
+        optional: true
+    },
+    displayName: {
+        isString: true,
+        optional: true
+    },
+    email: {
+        isEmail: {
+            errorMessage: "Invalid email"
+        },
+        optional: true
+    }
+}
+
+export const deleteUserValidationSchema = {
     username: {
         isString: true,
         notEmpty: {

@@ -9,6 +9,9 @@ export const handleValidationResult = (req, res, next) => {
 }
 
 export const userAuthentication = (req, res, next) => {
+    if(req.user){
+        return res.status(400).send({ msg: "You are already logged in. Pls logout first to switch to different account" })
+    }
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return next(err);
