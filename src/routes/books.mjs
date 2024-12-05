@@ -2,9 +2,18 @@ import { Router } from 'express';
 import { validationResult, matchedData, checkSchema, check } from 'express-validator';
 import { handleValidationResult } from '../utils/middlewares.mjs';
 import { Books } from '../mongoose/schemas/books.mjs';
-import { bookValidationSchema, bookIdValidationSchema, bookSearchValidationSchema } from '../utils/booksValidationSchemas.mjs';
+import { bookValidationSchema, bookIdValidationSchema, bookSearchValidationSchema, bookRestockValidationSchema } from '../utils/booksValidationSchemas.mjs';
 
 const router = Router();
+
+const isAdmin = (req, res, next) => {
+    if(req.user && req.user.isAdmin){
+        return next();
+    }
+    else{
+        return res.status(401).send({msg: "You are not authorized to do this action"});
+    }
+}
 
 router.get(
     '/api/books',
@@ -22,12 +31,17 @@ router.get(
     checkSchema(bookIdValidationSchema, ['params']),
     handleValidationResult,
     async (req, res) => {
-        console.log(matchedData(req));
-        const { params: { id }} = req;
-        const bookData = await Books.findById(id);
-        if(!bookData)
-            return res.status(404).send({msg: "Book not found"});
-        return res.status(200).send(bookData)
+        // console.log(matchedData(req));
+        const { id } = matchedData(req);
+        try{
+            const bookData = await Books.findById(id);
+            if(!bookData)
+                return res.status(404).send({msg: "Book not found"});
+            return res.status(200).send(bookData)
+        }
+        catch(err){
+            return res.status(400).send(err);
+        }
     }
 )
 
@@ -35,11 +49,15 @@ router.post(
     '/api/books',
     checkSchema(bookValidationSchema),
     handleValidationResult,
+    isAdmin,
     async (req, res) => {
         const newBook = matchedData(req);
         const book = new Books(newBook);
         try{
-            await book.save();
+            const savedBook = await book.save();
+            if(!savedBook)
+                return res.status(400).send("Failed to save book");
+            return res.status(201).send(book);
         }
         catch(err){
             if(err.code === 11000){
@@ -47,22 +65,21 @@ router.post(
             }
             return res.status(400).send(err);
         }
-        return res.status(201).send(book);
     }
 )
 
 router.put(
     '/api/books/:id',
-    checkSchema(bookValidationSchema),
+    checkSchema(bookRestockValidationSchema),
     checkSchema(bookIdValidationSchema, ['params']),
     handleValidationResult,
+    isAdmin,
     async (req, res) => {
-        const { id, ...data } = matchedData(req);
-        const newBook = Books(data);
-        const updated = await Books.findByIdAndUpdate(id, data);
+        const { id, availableCopies } = matchedData(req);
+        const updated = await Books.findByIdAndUpdate(id, { availableCopies });
         if(!updated)
             return res.status(418).send("Book not found. No changes made");
-        return res.status(200).send(updated);
+        return res.status(200).send({ msg: "Book updated successfully" });
     }
 )
 
@@ -70,15 +87,21 @@ router.delete(
     '/api/books/:id',
     checkSchema(bookIdValidationSchema, ['params']),
     handleValidationResult,
+    isAdmin,
     async (req, res) => {
         const { id } = matchedData(req);
-        const deletedBook = await Books.findByIdAndDelete(id);
-        if(!deletedBook)
-            return res.status(400).send({ msg: "Book not found" });
-        return res.status(200).send({
-            msg: "Success", 
-            deletedBook: deletedBook
-        })
+        try{
+            const deletedBook = await Books.findByIdAndDelete(id);
+            if(!deletedBook)
+                return res.status(400).send({ msg: "Book not found" });
+            return res.status(200).send({
+                msg: "Success", 
+                deletedBook: deletedBook
+            })
+        }
+        catch(err){
+            return res.status(400).send(err);
+        }
     }
 )
 

@@ -84,11 +84,11 @@ router.put(
     handleValidationResult,
     isLoggedIn,
     async (req, res) => {
+        const newData = matchedData(req);
+        if (newData.password) {
+            newData.password = hashPassword(newData.password);
+        }
         try {
-            const newData = matchedData(req);
-            if (newData.password) {
-                newData.password = hashPassword(newData.password);
-            }
             await User.findByIdAndUpdate(req.user._id, newData);
             return res.status(200).send({ msg: "User updated successfully" });
         } catch (err) {
@@ -101,9 +101,9 @@ router.delete(
     '/api/auth/profile',
     isLoggedIn,
     async (req, res) => {
+        const id = req.user._id;
         try {
-            const deleteUser = req.user.username;
-            const deletedUser = await User.findOneAndDelete({ username: deleteUser });
+            const deletedUser = await User.findByIdAndDelete(id);
             if (!deletedUser) {
                 return res.status(404).send({ msg: "Error: User not found" });
             }

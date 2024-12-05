@@ -43,6 +43,10 @@ export const adminActionValidationSchema = {
         },
         notEmpty: false
     },
+    membershipType: {
+        isString: true,
+        optional: true
+    }
 }
 
 export const updateProfileValidationSchema = {

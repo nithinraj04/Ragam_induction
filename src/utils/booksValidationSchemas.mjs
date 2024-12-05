@@ -76,3 +76,14 @@ export const bookSearchValidationSchema = {
         optional: true,
     },
 }
+
+export const bookRestockValidationSchema = {
+    availableCopies: {
+        isInt: {
+            errorMessage: 'Available Copies must be an integer',
+        },
+        notEmpty: {
+            errorMessage: 'Available Copies is required',
+        }
+    }
+}
