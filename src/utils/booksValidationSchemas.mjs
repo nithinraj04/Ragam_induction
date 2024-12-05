@@ -47,12 +47,15 @@ export const bookSearchValidationSchema = {
     title: {
         isString: {
             errorMessage: 'Title must be a string',
-        }
+        },
+        optional: true
     },
     author: {
         isString: {
             errorMessage: 'Author must be a string',
-        }
+            required: false
+        },
+        optional: true
     },
     publishedYear: {
         isInt: {

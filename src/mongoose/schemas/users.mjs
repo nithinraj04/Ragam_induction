@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.String,
         required: true,
         unique: true
+    },
+    membershipType: {
+        type: mongoose.Schema.Types.String,
+        default: "regular"
+    },
+    regDate: {
+        type: mongoose.Schema.Types.Date,
+        default: Date.now
     }
 });
 

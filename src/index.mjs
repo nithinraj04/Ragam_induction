@@ -2,15 +2,21 @@ import express from "express";
 import mongoose from "mongoose";
 import booksRouter from "./routes/books.mjs";
 import usersRouter from "./routes/users.mjs"
+import borrowingsRouter from "./routes/borrowings.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
+import MongoStore from "connect-mongo";
 import "dotenv/config";
 
 import { Books } from "./mongoose/schemas/books.mjs";
 import { initAdminUser } from "./utils/initAdminUser.mjs";
 
 const app = express();
+
+mongoose.connect('mongodb://localhost:27017/test', )
+	.then(() => console.log('Connected to MongoDB'))
+	.catch(err => console.error(err));
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
@@ -21,16 +27,16 @@ app.use(
 		resave: false,
 		cookie: {
 			maxAge: 1000*60*60*24
-		}
-	})
+		},
+		store: MongoStore.create({
+			client: mongoose.connection.getClient(),
+		}),
+	}),
 );
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-mongoose.connect('mongodb://localhost:27017/test', )
-	.then(() => console.log('Connected to MongoDB'))
-	.catch(err => console.error(err));
 
 app.get('/', 
 	(request, response) => {
@@ -43,6 +49,7 @@ app.get('/',
 
 app.use(booksRouter);
 app.use(usersRouter);
+app.use(borrowingsRouter);
 
 const PORT = process.env.PORT || 8080;
 

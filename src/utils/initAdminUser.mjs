@@ -8,6 +8,7 @@ export const initAdminUser = async () => {
     if(!adminUser){
         const admin = JSON.parse(process.env.ADMIN_USER_CREDENTIALS);
         admin.password = hashPassword(admin.password);
+        admin.membershipType = "admin";
         const newAdmin = new User(admin);
         try{
             const createAdmin = await newAdmin.save();

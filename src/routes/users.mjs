@@ -17,14 +17,14 @@ const router = Router();
 
 const isAdmin = (req, res, next) => {
     if (!req.user || !req.user.isAdmin) {
-        return res.status(400).send({ msg: "You are not authorized to do this action!" });
+        return res.status(401).send({ msg: "You are not authorized to do this action!" });
     }
     next();
 };
 
 const isLoggedIn = (req, res, next) => {
     if(!req.user){
-        return res.status(400).send({ msg: "You are not logged in" });
+        return res.status(401).send({ msg: "You are not logged in" });
     }
     next();
 }
@@ -73,8 +73,8 @@ router.get(
         if (!req.user) {
             return res.status(400).send({ msg: "You are not logged in" });
         }
-        const { username, displayName, email } = req.user;
-        return res.status(200).send({ username, displayName, email });
+        const { username, displayName, email, membershipType, regDate } = req.user;
+        return res.status(200).send({ username, displayName, email, membershipType, regDate });
     }
 );
 
