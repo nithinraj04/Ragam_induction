@@ -5,6 +5,7 @@ import { Books } from "../mongoose/schemas/books.mjs";
 import { borrowingSearchValidationSchema, newBorrowingValidationSchema } from "../utils/borrowingsValidationSchema.mjs";
 import { handleValidationResult } from "../utils/middlewares.mjs";
 import { startOfDay, endOfDay } from "date-fns";
+import { userAuthentication } from "../utils/middlewares.mjs";
 
 const router = Router();
 
@@ -59,6 +60,7 @@ router.post(
     '/api/borrowings',
     checkSchema(newBorrowingValidationSchema),
     handleValidationResult,
+    userAuthentication,
     isLoggedIn,
     verifyBorrowingLimit,
     alreadyBorrowedCheck,
@@ -90,6 +92,7 @@ router.post(
 
 router.get(
     '/api/borrowings',
+    userAuthentication,
     isLoggedIn,
     checkSchema(borrowingSearchValidationSchema, ['query']),
     handleValidationResult,
@@ -132,6 +135,7 @@ router.put(
     '/api/borrowings/:id',
     checkSchema({ id: { isMongoId: true } }, ['params']),
     handleValidationResult,
+    userAuthentication,
     isAdmin,
     async (req, res) => {
         const { id } = matchedData(req);

@@ -3,6 +3,7 @@ import { validationResult, matchedData, checkSchema, check } from 'express-valid
 import { handleValidationResult } from '../utils/middlewares.mjs';
 import { Books } from '../mongoose/schemas/books.mjs';
 import { bookValidationSchema, bookIdValidationSchema, bookSearchValidationSchema, bookRestockValidationSchema } from '../utils/booksValidationSchemas.mjs';
+import { userAuthentication } from '../utils/middlewares.mjs';
 
 const router = Router();
 
@@ -49,6 +50,7 @@ router.post(
     '/api/books',
     checkSchema(bookValidationSchema),
     handleValidationResult,
+    userAuthentication,
     isAdmin,
     async (req, res) => {
         const newBook = matchedData(req);
@@ -73,6 +75,7 @@ router.put(
     checkSchema(bookRestockValidationSchema),
     checkSchema(bookIdValidationSchema, ['params']),
     handleValidationResult,
+    userAuthentication,
     isAdmin,
     async (req, res) => {
         const { id, availableCopies } = matchedData(req);
@@ -87,6 +90,7 @@ router.delete(
     '/api/books/:id',
     checkSchema(bookIdValidationSchema, ['params']),
     handleValidationResult,
+    userAuthentication,
     isAdmin,
     async (req, res) => {
         const { id } = matchedData(req);

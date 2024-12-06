@@ -1,4 +1,5 @@
 import { validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 import passport from "passport";
 
 export const handleValidationResult = (req, res, next) => {
@@ -9,21 +10,25 @@ export const handleValidationResult = (req, res, next) => {
 }
 
 export const userAuthentication = (req, res, next) => {
-    if(req.user){
-        return res.status(400).send({ msg: "You are already logged in. Pls logout first to switch to different account" })
+    const authHeader = req.headers['authorization'];
+    console.log(req.headers);
+    if(!authHeader){
+        req.authmsg = "Pls login";
+        return next();
     }
-    passport.authenticate('local', (err, user, info) => {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.status(400).send({ message: info.message });
-        }
-        req.logIn(user, (err) => {
-            if (err) {
-                return next(err);
+    const token = authHeader && authHeader.split(' ')[1];
+    // console.log(token);
+    jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET,
+        (err, user) => {
+            if(err){
+                req.authmsg = "Pls refresh token";
+                return next();
             }
-            return next();
-        });
-    })(req, res, next);
+            console.log(user);
+            req.user = user;
+            next();
+        }
+    )
 };

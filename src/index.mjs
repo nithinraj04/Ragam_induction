@@ -20,21 +20,6 @@ mongoose.connect('mongodb://localhost:27017/test', )
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
-app.use(
-	session({
-		secret: process.env.SESSION_SECRET,
-		saveUninitialized: false,
-		resave: false,
-		cookie: {
-			maxAge: 1000*60*60*24
-		},
-		store: MongoStore.create({
-			client: mongoose.connection.getClient(),
-		}),
-	}),
-);
-app.use(passport.initialize());
-app.use(passport.session());
 
 
 
