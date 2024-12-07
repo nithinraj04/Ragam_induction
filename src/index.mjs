@@ -4,17 +4,13 @@ import booksRouter from "./routes/books.mjs";
 import usersRouter from "./routes/users.mjs"
 import borrowingsRouter from "./routes/borrowings.mjs";
 import cookieParser from "cookie-parser";
-import session from "express-session";
-import passport from "passport";
-import MongoStore from "connect-mongo";
 import "dotenv/config";
 
-import { Books } from "./mongoose/schemas/books.mjs";
 import { initAdminUser } from "./utils/initAdminUser.mjs";
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/test', )
+await mongoose.connect(process.env.MONGODB_URI)
 	.then(() => console.log('Connected to MongoDB'))
 	.catch(err => console.error(err));
 
@@ -25,7 +21,6 @@ app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 
 app.get('/', 
 	(request, response) => {
-		console.log(request.sessionID);
 		response.send({
 			msg : "Hello world!"
 		});
