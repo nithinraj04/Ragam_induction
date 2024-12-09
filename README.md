@@ -40,36 +40,33 @@ npm start
 
 ## Functionalities
 
-## Functionalities
-
 ### User Authentication
 - Users can register and log in. 
-    - `/api/auth/register`
-    - `/api/auth/login`
-    - `api/auth/logout`
+    - `POST /api/auth/register`
+    - `POST /api/auth/login`
+    - `POST api/auth/logout`
 - Token-based authentication using JWT. To refresh token, visit
-    - `/api/auth/refresh`
+    - `POST /api/auth/refresh`
 - Users can view, update and delete their profile
     - `GET PUT DELETE /api/auth/profile`
 - Admin users can view, create, update, and delete other users.
     - `GET /api/auth/users`
     - `GET PUT DELETE /api/auth/users/:id`
+- Only admins can change the subscription status of a user
 
 ### Book Management
 - Admin users can add, update, and delete books.
     - `POST /api/books`
     - `GET PUT DELETE/api/books/:id`
 - Users can view the list of available books and search for books by various criteria.
-    - `/api/books`
+    - `GET /api/books`
 
 ### Borrowing Management
-- Users can borrow books if they have not exceeded their borrowing limit.
-- Users can return borrowed books.
+- Users can borrow books if they have not exceeded their borrowing limit. Also, they can view all their borrowings.
+    - `POST GET /api/borrowings`
+- Admins can mark a borrowing as returned.
+    - `PUT /api/borrowings/:id`
 - Admin users can view all borrowings and manage them.
-
-### Middleware
-- Validation middleware for request data.
-- Authentication middleware to protect routes.
-- Error handling middleware for consistent error responses.
+    - `GET /api/borrowings`
 
 <-- Pending -->
