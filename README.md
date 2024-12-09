@@ -69,4 +69,39 @@ npm start
 - Admin users can view all borrowings and manage them.
     - `GET /api/borrowings`
 
+## Payload
+
+### Register user
+
+```JSON
+{
+    "username": "",
+    "password": "",
+    "displayName": "",
+    "email": ""
+}
+// Registration date and Membership type (regular) will be set automatically
+```
+
+### New book
+
+```JSON
+{
+    "title": "",
+    "author": "",
+    "publishedYear": "",
+    "Genre": "",
+    "availableCopies": ""
+}
+```
+
+### Borrow
+
+```JSON
+{
+    "bookID" : ""
+}
+// userID, Borrow date and due date will be filled automatically. Due date is 30 days from the borrow date.
+```
+
 <-- Pending -->
