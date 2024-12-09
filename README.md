@@ -104,4 +104,3 @@ npm start
 // userID, Borrow date and due date will be filled automatically. Due date is 30 days from the borrow date.
 ```
 
-<-- Pending -->
